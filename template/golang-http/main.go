@@ -36,6 +36,7 @@ func makeRequestHandler() func(http.ResponseWriter, *http.Request) {
 		result, resultErr := function.Handle(req)
 
 		if resultErr != nil {
+			log.Print(resultErr)
 			w.WriteHeader(http.StatusInternalServerError)
 		} else {
 			if result.StatusCode == 0 {
