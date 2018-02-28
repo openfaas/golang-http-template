@@ -7,6 +7,7 @@ RUN apk --no-cache add curl \
     && chmod +x /usr/bin/fwatchdog \
     && apk del curl --no-cache
 
+RUN mkdir -p /go/src/handler
 WORKDIR /go/src/handler
 COPY . .
 

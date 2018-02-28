@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"handler/function"
+	// "github.com/alexellis/golang-http-template/template/golang-http/function"
+	"github.com/openfaas-incubator/go-function-sdk"
 )
 
 func makeRequestHandler() func(http.ResponseWriter, *http.Request) {
@@ -15,7 +17,6 @@ func makeRequestHandler() func(http.ResponseWriter, *http.Request) {
 		var input []byte
 
 		if r.Body != nil {
-
 			defer r.Body.Close()
 
 			bodyBytes, bodyErr := ioutil.ReadAll(r.Body)
@@ -27,10 +28,24 @@ func makeRequestHandler() func(http.ResponseWriter, *http.Request) {
 			input = bodyBytes
 		}
 
-		result := function.Handle(input)
+		req := handler.Request{
+			Body:   input,
+			Header: r.Header,
+		}
 
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(result))
+		result, resultErr := function.Handle(req)
+
+		if resultErr != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		} else {
+			if result.StatusCode == 0 {
+				w.WriteHeader(http.StatusOK)
+			} else {
+				w.WriteHeader(result.StatusCode)
+			}
+		}
+
+		w.Write(result.Body)
 	}
 }
 
