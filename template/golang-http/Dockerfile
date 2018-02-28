@@ -30,7 +30,7 @@ WORKDIR /home/app
 
 COPY --from=0 /go/src/handler/handler    .
 COPY --from=0 /usr/bin/fwatchdog         .
-RUN apk add --no-cache curl
+# RUN apk add --no-cache curl
 USER app
 
 ENV fprocess="./handler"

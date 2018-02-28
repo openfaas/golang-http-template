@@ -35,6 +35,12 @@ func makeRequestHandler() func(http.ResponseWriter, *http.Request) {
 
 		result, resultErr := function.Handle(req)
 
+		if result.Header != nil {
+			for k, v := range result.Header {
+				w.Header()[k] = v
+			}
+		}
+
 		if resultErr != nil {
 			log.Print(resultErr)
 			w.WriteHeader(http.StatusInternalServerError)
