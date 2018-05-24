@@ -12,8 +12,8 @@ The template makes use of the OpenFaaS incubator project [of-watchdog](https://g
 ## Trying the template
 
 ```
-$ faas template pull https://github.com/alexellis/golang-http-template
-$ faas new --lang golang-http
+$ faas template pull https://github.com/openfaas-incubator/golang-http-template
+$ faas new --lang golang-http <fn-name>
 ```
 
 ## Example usage
