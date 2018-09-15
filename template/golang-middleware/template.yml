@@ -1,2 +1,2 @@
-language: go
+language: golang-middleware
 fprocess: ./handler

@@ -117,9 +117,9 @@ func Handle(req handler.Request) (handler.Response, error) {
 }
 ```
 
-## go-middleware
+## golang-middleware
 
-This template uses the http.HandlerFunc as entry point.
+This template uses the [http.HandlerFunc](https://golang.org/pkg/net/http/#HandlerFunc) as entry point.
 
 ### Status of the template
 
@@ -177,5 +177,76 @@ func Handle(w http.ResponseWriter, r *http.Request) {
     // write result
 	w.WriteHeader(http.StatusOK)
 	w.Write(resBody)
+}
+```
+
+Example persistent database connection pool between function calls:
+
+```go
+package function
+
+import (
+	"database/sql"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
+	_ "github.com/go-sql-driver/mysql"
+)
+
+// db pool shared between function calls
+var db *sql.DB
+
+func init() {
+	var err error
+	db, err = sql.Open("mysql", "user:password@/dbname")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	err = db.Ping()
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
+func Handle(w http.ResponseWriter, r *http.Request) {
+	// read request payload
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	query := string(body)
+
+	// log to stdout
+	fmt.Printf("executing query: %s", query)
+
+	rows, err := db.Query(query)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+	
+	ids := make([]string, 0)
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		ids = append(ids, string(id))
+	}
+	if err := rows.Err(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	
+	result := fmt.Sprintf("ids %s", strings.Join(ids, ", "))
+
+	// write result
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(result))
 }
 ```
