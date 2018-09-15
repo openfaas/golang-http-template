@@ -1,22 +1,24 @@
-OpenFaaS Golang HTTP template
+OpenFaaS Golang HTTP templates
 =============================================
+
+## golang-http
 
 This template provides additional context and control over the HTTP response from your function.
 
-## Status of the template
+### Status of the template
 
 This template is pre-release and is likely to change - please provide feedback via https://github.com/openfaas/faas
 
 The template makes use of the OpenFaaS incubator project [of-watchdog](https://github.com/openfaas-incubator/of-watchdog).
 
-## Trying the template
+### Trying the template
 
 ```
 $ faas template pull https://github.com/openfaas-incubator/golang-http-template
 $ faas new --lang golang-http <fn-name>
 ```
 
-## Example usage
+### Example usage
 
 Example writing a successful message:
 
@@ -112,5 +114,68 @@ func Handle(req handler.Request) (handler.Response, error) {
 			"X-Served-By": []string{"My Awesome Function"},
 		},
 	}, err
+}
+```
+
+## go-middleware
+
+This template uses the http.HandlerFunc as entry point.
+
+### Status of the template
+
+The template makes use of the OpenFaaS incubator project [of-watchdog](https://github.com/openfaas-incubator/of-watchdog).
+
+### Trying the template
+
+```
+$ faas template pull https://github.com/openfaas-incubator/golang-http-template
+$ faas new --lang golang-middleware <fn-name>
+```
+
+### Example usage
+
+Example writing a json response:
+
+```go
+package function
+
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
+)
+
+func Handle(w http.ResponseWriter, r *http.Request) {
+    // read request payload
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	
+    // log to stdout
+	fmt.Printf("request body: %s", string(reqBody))
+
+	response := struct {
+		Payload     string              `json:"payload"`
+		Headers     map[string][]string `json:"headers"`
+		Environment []string            `json:"environment"`
+	}{
+		Payload:     string(reqBody),
+		Headers:     r.Header,
+		Environment: os.Environ(),
+	}
+
+	resBody, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+    // write result
+	w.WriteHeader(http.StatusOK)
+	w.Write(resBody)
 }
 ```
