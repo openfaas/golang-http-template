@@ -1,7 +1,20 @@
 OpenFaaS Golang HTTP templates
 =============================================
 
-## golang-http
+This repository contains two Golang templates for OpenFaaS which give additional control over the HTTP request and response. They will both handle higher throughput than the classic watchdog due to the process being kept warm.
+
+```
+$ faas template pull https://github.com/openfaas-incubator/golang-http-template
+$ faas new --list
+
+Languages available as templates:
+- golang-http
+- golang-middleware
+```
+
+The two templates are equivalent with `golang-http` using a structured request/response object and the alternative implementing a Golang `http.HandleFunc` from the Golang stdlib. `golang-http` is more "conventional" for a Golang serverless template but this is a question of style/taste.
+
+## 1.0 golang-http
 
 This template provides additional context and control over the HTTP response from your function.
 
@@ -117,7 +130,7 @@ func Handle(req handler.Request) (handler.Response, error) {
 }
 ```
 
-## golang-middleware
+## 2.0 golang-middleware
 
 This template uses the [http.HandlerFunc](https://golang.org/pkg/net/http/#HandlerFunc) as entry point.
 
