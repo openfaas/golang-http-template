@@ -1,9 +1,8 @@
-FROM golang:1.10.4-alpine3.8
+FROM golang:1.10.4-alpine3.8 as build
 
-# Alternatively use ADD https:// (which will not be cached by Docker builder)
 RUN apk --no-cache add curl \
     && echo "Pulling watchdog binary from Github." \
-    && curl -sSLf https://github.com/openfaas-incubator/of-watchdog/releases/download/0.2.7/of-watchdog > /usr/bin/fwatchdog \
+    && curl -sSLf https://github.com/openfaas-incubator/of-watchdog/releases/download/0.4.0/of-watchdog > /usr/bin/fwatchdog \
     && chmod +x /usr/bin/fwatchdog \
     && apk del curl --no-cache
 
@@ -19,18 +18,17 @@ RUN CGO_ENABLED=0 GOOS=linux \
     go test $(go list ./... | grep -v /vendor/) -cover
 
 FROM alpine:3.8
-RUN apk --no-cache add ca-certificates
-
-# Add non root user
-RUN addgroup -S app && adduser -S -g app app
-RUN mkdir -p /home/app
-RUN chown app /home/app
+# Add non root user and certs
+RUN apk --no-cache add ca-certificates \
+    && addgroup -S app && adduser -S -g app app \
+    && mkdir -p /home/app \
+    && chown app /home/app
 
 WORKDIR /home/app
 
-COPY --from=0 /go/src/handler/handler    .
-COPY --from=0 /usr/bin/fwatchdog         .
-# RUN apk add --no-cache curl
+COPY --from=build /go/src/handler/handler    .
+COPY --from=build /usr/bin/fwatchdog         .
+
 USER app
 
 ENV fprocess="./handler"
