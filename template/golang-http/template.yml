@@ -1,2 +1,2 @@
-language: go
+language: golang-http
 fprocess: ./handler

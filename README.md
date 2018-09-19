@@ -9,8 +9,12 @@ $ faas new --list
 
 Languages available as templates:
 - golang-http
+- golang-http-armhf
 - golang-middleware
+- golang-middleware-armhf
 ```
+
+> To build and deploy a function for your Raspberry Pi or ARMv7 in general, use the language templates ending in `-armhf`.
 
 The two templates are equivalent with `golang-http` using a structured request/response object and the alternative implementing a Golang `http.HandleFunc` from the Golang stdlib. `golang-http` is more "conventional" for a Golang serverless template but this is a question of style/taste.
 
