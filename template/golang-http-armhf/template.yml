@@ -1,2 +1,2 @@
-language: go-armhf
+language: golang-http-armhf
 fprocess: ./handler
