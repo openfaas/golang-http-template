@@ -165,22 +165,31 @@ import (
 )
 
 func Handle(w http.ResponseWriter, r *http.Request) {
-    // read request payload
-	reqBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	var input []byte
+
+	if r.Body != nil {
+		defer r.Body.Close()
+
+		// read request payload
+		reqBody, err := ioutil.ReadAll(r.Body)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+
+		input = reqBody
+		}
 	}
-	
-    // log to stdout
-	fmt.Printf("request body: %s", string(reqBody))
+
+	// log to stdout
+	fmt.Printf("request body: %s", string(input))
 
 	response := struct {
 		Payload     string              `json:"payload"`
 		Headers     map[string][]string `json:"headers"`
 		Environment []string            `json:"environment"`
 	}{
-		Payload:     string(reqBody),
+		Payload:     string(input),
 		Headers:     r.Header,
 		Environment: os.Environ(),
 	}
@@ -228,16 +237,24 @@ func init() {
 }
 
 func Handle(w http.ResponseWriter, r *http.Request) {
-	// read request payload
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	var query string
+
+	if r.Body != nil {
+		defer r.Body.Close()
+
+		// read request payload
+		body, err := ioutil.ReadAll(r.Body)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		query = string(body)
 	}
-	query := string(body)
 
 	// log to stdout
-	fmt.Printf("executing query: %s", query)
+	fmt.Printf("Executing query: %s", query)
 
 	rows, err := db.Query(query)
 	if err != nil {
