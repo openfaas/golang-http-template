@@ -12,12 +12,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Body != nil {
 		defer r.Body.Close()
 
-		body, err := ioutil.ReadAll(r.Body)
-
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		body, _ := ioutil.ReadAll(r.Body)
 
 		input = body
 	}
