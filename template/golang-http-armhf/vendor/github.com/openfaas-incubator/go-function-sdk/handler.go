@@ -22,6 +22,7 @@ type Request struct {
 	Body        []byte
 	Header      http.Header
 	QueryString string
+	Method      string
 }
 
 // FunctionHandler used for a serverless Go method invocation

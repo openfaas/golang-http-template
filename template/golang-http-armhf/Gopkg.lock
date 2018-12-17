@@ -2,10 +2,10 @@
 
 
 [[projects]]
-  branch = "master"
   name = "github.com/openfaas-incubator/go-function-sdk"
   packages = ["."]
-  revision = "a39203046a9e054e47cd72ef28fd48cdd3dc0471"
+  revision = "cac4b8744921c3935ace0551f3d1240eaac69c7a"
+  version = "1.0.0"
 
 [solve-meta]
   analyzer-name = "dep"
