@@ -9,7 +9,7 @@ import (
 
 	"handler/function"
 	// "github.com/alexellis/golang-http-template/template/golang-http/function"
-	"github.com/openfaas-incubator/go-function-sdk"
+	handler "github.com/openfaas-incubator/go-function-sdk"
 )
 
 func makeRequestHandler() func(http.ResponseWriter, *http.Request) {
@@ -31,6 +31,7 @@ func makeRequestHandler() func(http.ResponseWriter, *http.Request) {
 		req := handler.Request{
 			Body:   input,
 			Header: r.Header,
+			Method: r.Method,
 		}
 
 		result, resultErr := function.Handle(req)
