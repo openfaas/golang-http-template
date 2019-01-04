@@ -28,6 +28,9 @@ WORKDIR /home/app
 
 COPY --from=build /go/src/handler/handler    .
 COPY --from=build /usr/bin/fwatchdog         .
+COPY --from=build /go/src/handler/function/  .
+
+RUN chown -R app /home/app
 
 USER app
 
