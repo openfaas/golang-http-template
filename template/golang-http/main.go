@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"handler/function"
@@ -60,11 +61,21 @@ func makeRequestHandler() func(http.ResponseWriter, *http.Request) {
 func main() {
 	s := &http.Server{
 		Addr:           fmt.Sprintf(":%d", 8081),
-		ReadTimeout:    3 * time.Second,
-		WriteTimeout:   3 * time.Second,
+		ReadTimeout:    getDuration("write_timout", 10*time.Second),
+		WriteTimeout:   getDuration("read_timout", 10*time.Second),
 		MaxHeaderBytes: 1 << 20, // Max header of 1MB
 	}
 
 	http.HandleFunc("/", makeRequestHandler())
 	log.Fatal(s.ListenAndServe())
+}
+
+// getDuration returns a duration value from the environment or returns the default
+func getDuration(key string, defaultValue time.Duration) time.Duration {
+	result := defaultValue
+	if val := os.Getenv(key); val != "" {
+		parsed, _ := time.ParseDuration(val)
+		result = parsed
+	}
+	return result
 }
