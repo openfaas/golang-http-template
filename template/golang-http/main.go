@@ -59,7 +59,7 @@ func makeRequestHandler() func(http.ResponseWriter, *http.Request) {
 
 func main() {
 	s := &http.Server{
-		Addr:           fmt.Sprintf(":%d", 8081),
+		Addr:           fmt.Sprintf(":%d", 8082),
 		ReadTimeout:    3 * time.Second,
 		WriteTimeout:   3 * time.Second,
 		MaxHeaderBytes: 1 << 20, // Max header of 1MB

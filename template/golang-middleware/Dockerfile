@@ -36,6 +36,6 @@ USER app
 
 ENV fprocess="./handler"
 ENV mode="http"
-ENV upstream_url="http://127.0.0.1:8081"
+ENV upstream_url="http://127.0.0.1:8082"
 
 CMD ["./fwatchdog"]
