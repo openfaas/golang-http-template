@@ -284,3 +284,22 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(result))
 }
 ```
+
+Example retrieving request query strings
+```go
+package function
+
+import (
+	"fmt"
+	"net/http"
+)
+
+func Handle(w http.ResponseWriter, r *http.Request) {
+	// Parses RawQuery and returns the corresponding values as a map[string][]string 
+	// (https://golang.org/pkg/net/url/#URL.Query)
+	query := r.URL.Query()
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(fmt.Sprintf("id: %s", query.Get("id"))))
+}
+```
