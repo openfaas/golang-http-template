@@ -1,10 +1,8 @@
+FROM openfaas/of-watchdog:0.5.3 as watchdog
 FROM golang:1.10.4-alpine3.8 as build
 
-RUN apk --no-cache add curl \
-    && echo "Pulling watchdog binary from Github." \
-    && curl -sSLf https://github.com/openfaas-incubator/of-watchdog/releases/download/0.5.0/of-watchdog > /usr/bin/fwatchdog \
-    && chmod +x /usr/bin/fwatchdog \
-    && apk del curl --no-cache
+COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
+RUN chmod +x /usr/bin/fwatchdog
 
 RUN mkdir -p /go/src/handler
 WORKDIR /go/src/handler
