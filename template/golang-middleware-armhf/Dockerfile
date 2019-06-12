@@ -35,5 +35,7 @@ USER app
 ENV fprocess="./handler"
 ENV mode="http"
 ENV upstream_url="http://127.0.0.1:8082"
+ENV read_timeout="3s"
+ENV write_timeout="3s"
 
 CMD ["./fwatchdog"]
