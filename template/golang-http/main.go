@@ -31,9 +31,10 @@ func makeRequestHandler() func(http.ResponseWriter, *http.Request) {
 		}
 
 		req := handler.Request{
-			Body:   input,
-			Header: r.Header,
-			Method: r.Method,
+			Body:        input,
+			Header:      r.Header,
+			Method:      r.Method,
+			QueryString: r.URL.RawQuery,
 		}
 
 		result, resultErr := function.Handle(req)
