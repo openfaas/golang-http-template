@@ -1,4 +1,5 @@
-FROM openfaas/of-watchdog:0.5.3 as watchdog
+FROM openfaas/of-watchdog:0.7.2 as watchdog
+
 FROM golang:1.11-alpine3.10 as build
 
 ENV CGO_ENABLED=0
