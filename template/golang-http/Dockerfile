@@ -1,11 +1,15 @@
 FROM openfaas/of-watchdog:0.7.2 as watchdog
 
-FROM golang:1.10.4-alpine3.8 as build
+FROM golang:1.13.1-alpine3.10 as build
+
+RUN apk --no-cache add git
 
 ENV CGO_ENABLED=0
 
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 RUN chmod +x /usr/bin/fwatchdog
+
+ENV CGO_ENABLED=0
 
 RUN mkdir -p /go/src/handler
 WORKDIR /go/src/handler
@@ -14,9 +18,11 @@ COPY . .
 # Run a gofmt and exclude all vendored code.
 RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*" -not -path "./function/vendor/*"))" || { echo "Run \"gofmt -s -w\" on your Golang code"; exit 1; }
 
-RUN CGO_ENABLED=0 GOOS=linux \
-    go build --ldflags "-s -w" -a -installsuffix cgo -o handler . && \
-    go test $(go list ./... | grep -v /vendor/) -cover
+ARG GO111MODULE="off"
+ARG GOPROXY=""
+
+RUN go build --ldflags "-s -w" -a -installsuffix cgo -o handler .
+RUN go test handler/function/... -cover
 
 FROM alpine:3.10
 # Add non root user and certs
