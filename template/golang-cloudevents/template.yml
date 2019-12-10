@@ -1,0 +1,2 @@
+language: golang-cloudevents
+fprocess: ./handler
