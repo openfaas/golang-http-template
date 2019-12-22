@@ -1,5 +1,4 @@
-OpenFaaS Golang HTTP templates
-=============================================
+# OpenFaaS Golang HTTP templates
 
 This repository contains two Golang templates for OpenFaaS which give additional control over the HTTP request and response. They will both handle higher throughput than the classic watchdog due to the process being kept warm.
 
@@ -8,6 +7,7 @@ $ faas template pull https://github.com/openfaas-incubator/golang-http-template
 $ faas new --list
 
 Languages available as templates:
+- golang-cloudevents
 - golang-http
 - golang-http-armhf
 - golang-middleware
@@ -284,3 +284,43 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(result))
 }
 ```
+
+## golang-cloudevents
+
+This template enables you to handle a [CloudEvents](https://cloudevents.io) [`Event`](https://godoc.org/github.com/cloudevents/sdk-go/pkg/cloudevents#Event) directly, without needing to derive the `Event` from the HTTP request.
+
+Here's an example:
+
+```go
+package function
+
+import (
+		"log"
+
+		"github.com/my-scooter/scooters" // Fictional library
+		"github.com/clooudevents/sdk-go"
+)
+
+func Handle(event cloudevents.Event) {
+		var data map[string]interface{}
+
+		if err := event.DataAs(&data); err != nil {
+				log.Printf("could not parse event data: %v", err)
+		}
+
+		scooterId := data["scooter"]["id"]
+
+		switch t := event.Type() {
+		case "scooter.unlock":
+				scooters.Unlock(scooterId)
+		case "scooter.lock":
+				scooters.Lock(scooterId)
+		case "scooter.recharge":
+				scooters.Recharge(scooterId)
+		default:
+				log.Printf("did not recognize event type %s", t)
+		}
+}
+```
+
+As you can see, the CloudEvents template does *not* provide an HTTP response writer, which makes it more suitable for "trigger and forget" use cases than for use cases that require an HTTP response from the function.
