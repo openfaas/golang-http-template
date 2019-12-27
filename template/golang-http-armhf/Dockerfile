@@ -1,7 +1,5 @@
-FROM openfaas/of-watchdog:0.7.2 as watchdog
-
-
-FROM golang:1.13.1-alpine3.10 as build
+FROM openfaas/of-watchdog:0.7.3 as watchdog
+FROM golang:1.13-alpine3.11 as build
 
 RUN apk --no-cache add git
 
@@ -23,7 +21,7 @@ ARG GOPROXY=""
 RUN go build --ldflags "-s -w" -a -installsuffix cgo -o handler .
 RUN go test handler/function/... -cover
 
-FROM alpine:3.10
+FROM alpine:3.11
 # Add non root user and certs
 RUN apk --no-cache add ca-certificates \
     && addgroup -S app && adduser -S -g app app \
