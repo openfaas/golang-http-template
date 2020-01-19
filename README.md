@@ -18,22 +18,32 @@ Languages available as templates:
 
 The two templates are equivalent with `golang-http` using a structured request/response object and the alternative implementing a Golang `http.HandleFunc` from the Golang stdlib. `golang-http` is more "conventional" for a Golang serverless template but this is a question of style/taste.
 
+## Dependencies
+
+You can manage dependencies in one of the following ways:
+
+* To use Go modules without vendoring, add `--build-arg GO111MODULE=on` to `faas-cli up`, you can also use `--build-arg GOPROXY=https://` if you want to use your own mirror for the modules
+* For traditional vendoring with `dep` give no argument, or add `--build-arg GO111MODULE=off` to `faas-cli up`
+
 ## 1.0 golang-http
 
 This template provides additional context and control over the HTTP response from your function.
 
 ### Status of the template
 
-This template is pre-release and is likely to change - please provide feedback via https://github.com/openfaas/faas
+This template is the most performant and recent Golang template for OpenFaaS which also provides a function-style request and response for the user.
 
-The template makes use of the OpenFaaS incubator project [of-watchdog](https://github.com/openfaas-incubator/of-watchdog).
+### Get the template
 
-### Trying the template
+```sh
+$ faas template store pull golang-http
 
-```
+# Or
 $ faas template pull https://github.com/openfaas-incubator/golang-http-template
 $ faas new --lang golang-http <fn-name>
 ```
+
+This template is also available for armhf / Raspberry Pi via the name `golang-http-armhf`.
 
 ### Example usage
 
@@ -140,18 +150,23 @@ This template uses the [http.HandlerFunc](https://golang.org/pkg/net/http/#Handl
 
 ### Status of the template
 
-The template makes use of the OpenFaaS incubator project [of-watchdog](https://github.com/openfaas-incubator/of-watchdog).
+Like the golang-http template, this is one of the fastest templates available, but takes a more service-orientated approach to its signature. Instead of looking like a traditional function, the user has complete control over the HTTP request and response.
 
-### Trying the template
+### Get the template
 
 ```
-$ faas template pull https://github.com/openfaas-incubator/golang-http-template
+$ faas template store pull golang-middleware
+
+# Or
+$ faas template pull https://github.com/openfaas-incubator/golang-middleware-template
 $ faas new --lang golang-middleware <fn-name>
 ```
 
+This template is also available for armhf / Raspberry Pi via the name `golang-middleware-armhf`.
+
 ### Example usage
 
-Example writing a json response:
+Example writing a JSON response:
 
 ```go
 package function
