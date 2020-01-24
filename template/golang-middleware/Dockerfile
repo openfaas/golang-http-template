@@ -12,14 +12,21 @@ RUN mkdir -p /go/src/handler
 WORKDIR /go/src/handler
 COPY . .
 
+RUN $(cat function/GO_REPLACE.txt >> ./go.mod || exit 0) && cat go.mod
+
 # Run a gofmt and exclude all vendored code.
 RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*" -not -path "./function/vendor/*"))" || { echo "Run \"gofmt -s -w\" on your Golang code"; exit 1; }
 
 ARG GO111MODULE="off"
 ARG GOPROXY=""
+ARG GOFLAGS=""
 
+WORKDIR /go/src/handler/function
+
+RUN go test ./... -cover
+
+WORKDIR /go/src/handler
 RUN go build --ldflags "-s -w" -a -installsuffix cgo -o handler .
-RUN go test handler/function/... -cover
 
 FROM alpine:3.11
 # Add non root user and certs
@@ -30,11 +37,9 @@ RUN apk --no-cache add ca-certificates \
 
 WORKDIR /home/app
 
-COPY --from=build /go/src/handler/handler    .
-COPY --from=build /usr/bin/fwatchdog         .
-COPY --from=build /go/src/handler/function/  .
-
-RUN chown -R app /home/app
+COPY --from=build --chown=app /go/src/handler/handler    .
+COPY --from=build --chown=app /usr/bin/fwatchdog         .
+COPY --from=build --chown=app /go/src/handler/function/  .
 
 USER app
 
