@@ -299,3 +299,53 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(result))
 }
 ```
+
+#### Advanced usage - Go sub-modules via `GO_REPLACE.txt`
+
+For this example you will need to be using Go 1.13 or newer and Go modules, enable this via `faas-cli build --build-arg GO111MODULE=on`.
+
+Imagine you have a package which you want to store outside of the `handler.go` file, it's another middleware which can perform an echo.
+
+```Golang
+package handlers
+
+import (
+	"io/ioutil"
+	"net/http"
+)
+
+func Echo(w http.ResponseWriter, r *http.Request) {
+
+	if r.Body != nil {
+		defer r.Body.Close()
+		b, _ := ioutil.ReadAll(r.Body)
+		w.Write(b)
+	}
+
+}
+```
+
+To include a relative module such as this new `handlers` package, you should create a `GO_REPLACE.txt` file as follows.
+
+Let's say your GOPATH for your GitHub repo is: `github.com/alexellis/vault/` and your function is called `purchase`, this makes a total path of: `github.com/alexellis/vault/purchase/`
+
+```
+replace github.com/alexellis/vault/purchase/handlers => ./function/handlers
+```
+
+Now if you want to reference the handlers package from within your `handler.go` write the following:
+
+```golang
+package function
+
+import (
+	"net/http"
+
+	"github.com/alexellis/vault/purchase/handlers"
+)
+
+func Handle(w http.ResponseWriter, r *http.Request) {
+
+	handlers.Echo(w, r)
+}
+```
