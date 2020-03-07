@@ -158,7 +158,8 @@ Like the golang-http template, this is one of the fastest templates available, b
 $ faas template store pull golang-middleware
 
 # Or
-$ faas template pull https://github.com/openfaas-incubator/golang-middleware-template
+
+$ faas template pull https://github.com/openfaas-incubator/golang-http-template
 $ faas new --lang golang-middleware <fn-name>
 ```
 
