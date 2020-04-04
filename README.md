@@ -301,6 +301,24 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
+Example retrieving request query strings
+
+```go
+package function
+import (
+	"fmt"
+	"net/http"
+)
+func Handle(w http.ResponseWriter, r *http.Request) {
+	// Parses RawQuery and returns the corresponding
+	// values as a map[string][]string 
+	// for more info https://golang.org/pkg/net/url/#URL.Query
+	query := r.URL.Query()
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(fmt.Sprintf("id: %s", query.Get("id"))))
+}
+```
+
 #### Advanced usage - Go sub-modules via `GO_REPLACE.txt`
 
 For this example you will need to be using Go 1.13 or newer and Go modules, enable this via `faas-cli build --build-arg GO111MODULE=on`.
