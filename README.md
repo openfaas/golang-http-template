@@ -144,6 +144,42 @@ func Handle(req handler.Request) (handler.Response, error) {
 }
 ```
 
+Example responding to an aborted request.
+
+The `Request` object provides access to the request context. This allows you to check if the request has been cancelled by using the context's done channel `req.Context().Done()` or the context's error `req.Context().Err()`
+
+```go
+package function
+
+import (
+	"fmt"
+	"net/http"
+
+	handler "github.com/openfaas-incubator/go-function-sdk"
+)
+
+// Handle a function invocation
+func Handle(req handler.Request) (handler.Response, error) {
+	var err error
+
+	for i := 0; i < 10000; i++ {
+		if req.Context().Err() != nil  {
+			return handler.Response{}, fmt.Errorf("request cancelled")
+		}
+		fmt.Printf("count %d\n", i)
+	}
+
+	message := fmt.Sprintf("Hello world, input was: %s", string(req.Body))
+	return handler.Response{
+		Body:       []byte(message),
+		StatusCode: http.StatusOK,
+	}, err
+}
+```
+
+This context can also be passed to other methods so that they can respond to the cancellation as well, for example [`db.ExecContext(req.Context())`](https://golang.org/pkg/database/sql/#DB.ExecContext)
+
+
 ## 2.0 golang-middleware
 
 This template uses the [http.HandlerFunc](https://golang.org/pkg/net/http/#HandlerFunc) as entry point.
@@ -254,6 +290,7 @@ func init() {
 
 func Handle(w http.ResponseWriter, r *http.Request) {
 	var query string
+	ctx := r.Context()
 
 	if r.Body != nil {
 		defer r.Body.Close()
@@ -272,15 +309,19 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	// log to stdout
 	fmt.Printf("Executing query: %s", query)
 
-	rows, err := db.Query(query)
+	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer rows.Close()
-	
+
 	ids := make([]string, 0)
 	for rows.Next() {
+		if e := ctx.Err(); e != nil {
+			http.Error(w, e, http.StatusBadRequest)
+			return
+		}
 		var id int
 		if err := rows.Scan(&id); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -292,7 +333,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	
+
 	result := fmt.Sprintf("ids %s", strings.Join(ids, ", "))
 
 	// write result
@@ -311,7 +352,7 @@ import (
 )
 func Handle(w http.ResponseWriter, r *http.Request) {
 	// Parses RawQuery and returns the corresponding
-	// values as a map[string][]string 
+	// values as a map[string][]string
 	// for more info https://golang.org/pkg/net/url/#URL.Query
 	query := r.URL.Query()
 	w.WriteHeader(http.StatusOK)
