@@ -97,6 +97,7 @@ func makeRequestHandler() func(http.ResponseWriter, *http.Request) {
 			Method:      r.Method,
 			QueryString: r.URL.RawQuery,
 		}
+		req.WithContext(r.Context())
 
 		result, resultErr := function.Handle(req)
 
