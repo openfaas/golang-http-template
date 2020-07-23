@@ -1,12 +1,12 @@
-FROM openfaas/of-watchdog:0.7.7 as watchdog
+FROM openfaas/of-watchdog:0.8.0 as watchdog
 FROM golang:1.13-alpine3.11 as build
 
 RUN apk --no-cache add git
 
+ENV CGO_ENABLED=0
+
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 RUN chmod +x /usr/bin/fwatchdog
-
-ENV CGO_ENABLED=0
 
 RUN mkdir -p /go/src/handler
 WORKDIR /go/src/handler
