@@ -1,7 +1,0 @@
-# Gopkg.toml
-
-ignored = ["github.com/openfaas-incubator/go-function-sdk"]
-
-[prune]
-  go-tests = true
-  unused-packages = true

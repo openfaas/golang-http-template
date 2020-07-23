@@ -15,7 +15,7 @@ import (
 
 	"handler/function"
 
-	handler "github.com/openfaas-incubator/go-function-sdk"
+	handler "github.com/openfaas/templates-sdk/go-http"
 )
 
 var (

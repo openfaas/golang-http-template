@@ -1,2 +1,2 @@
-github.com/openfaas-incubator/go-function-sdk v0.0.0-20200405082418-b31e65bf8a33 h1:KhbcrtXR+IO7IWF08RzKpgMudBhEeRRqNmRurE1iph4=
-github.com/openfaas-incubator/go-function-sdk v0.0.0-20200405082418-b31e65bf8a33/go.mod h1:F37Kp+hwdHP+o3UKjkGzikQg4weKiMvcegT9vCQjvjE=
+github.com/openfaas/templates-sdk v0.0.0-20200723092016-0ebf61253625 h1:6JSt10GDCOw0F67bWnqZ6AYg92pbqCcchTu181aT1w0=
+github.com/openfaas/templates-sdk v0.0.0-20200723092016-0ebf61253625/go.mod h1:JWcVHdzlHcR7nLuaDL88Mz68wOqDvOn0CLO6t27OMhk=

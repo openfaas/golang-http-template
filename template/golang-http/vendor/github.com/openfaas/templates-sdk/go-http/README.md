@@ -1,31 +1,30 @@
-# go-function-sdk
-An SDK for building OpenFaaS functions in Go
+# go-http SDK
 
+An SDK for building OpenFaaS functions in Go
 
 ## Installing
 
 Use `go get` to retrieve the SDK to add it to your `GOPATH` workspace, or
 project's Go module dependencies.
 
-	go get github.com/openfaas-incubator/go-function-sdk
+	go get github.com/openfaas/templates-sdk/go-http
 
 To update the SDK use `go get -u` to retrieve the latest version of the SDK.
 
-	go get -u github.com/openfaas-incubator/go-function-sdk
+	go get -u github.com/openfaas/templates-sdk/go-http
 	
 	
 ## Features
 
 ### Handler definition
+
 ```go
 type FunctionHandler interface {
 	Handle(req Request) (Response, error)
 }
 ```
 
-`FunctionHandler` interface is used by [golang-http](https://github.com/openfaas-incubator/golang-http-template/tree/master/template/golang-http)
-template to define a functions handler
-
+`FunctionHandler` interface is used by [golang-http](https://github.com/openfaas-incubator/golang-http-template/tree/master/template/golang-http) template to define a functions handler
 
 ### Secrets
 For the time being please use the secrets function from `github.com/openfaas/openfaas-cloud/sdk`
