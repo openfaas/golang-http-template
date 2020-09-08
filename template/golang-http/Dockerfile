@@ -1,5 +1,10 @@
-FROM openfaas/of-watchdog:0.8.0 as watchdog
-FROM golang:1.13-alpine3.11 as build
+FROM --platform=${TARGETPLATFORM:-linux/amd64} openfaas/of-watchdog:0.8.0 as watchdog
+FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.13-alpine3.11 as build
+
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
 
 RUN apk --no-cache add git
 
@@ -18,10 +23,11 @@ RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*" -n
 ARG GO111MODULE="off"
 ARG GOPROXY=""
 
-RUN go build --ldflags "-s -w" -a -installsuffix cgo -o handler .
-RUN go test handler/function/... -cover
+RUN CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+    go build --ldflags "-s -w" -a -installsuffix cgo -o handler .
+RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test handler/function/... -cover
 
-FROM alpine:3.11
+FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.11
 # Add non root user and certs
 RUN apk --no-cache add ca-certificates \
     && addgroup -S app && adduser -S -g app app \
