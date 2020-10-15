@@ -3,7 +3,16 @@ OpenFaaS Golang HTTP templates
 
 This repository contains two Golang templates for OpenFaaS which give additional control over the HTTP request and response. They will both handle higher throughput than the classic watchdog due to the process being kept warm.
 
+Using the templates:
+
+```bash
+faas-cli template store pull golang-http
+faas-cli template store pull golang-middleware
 ```
+
+Or:
+
+```bash
 $ faas template pull https://github.com/openfaas-incubator/golang-http-template
 $ faas new --list
 
