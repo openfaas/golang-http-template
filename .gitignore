@@ -1,3 +1,43 @@
 build
 test
 test.yml
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+#Logs and locks
+*.log
+*.lock
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+vendor/
+
+# Binary directory (remove the comment below to include it)
+bin/
+
+# GoLand files
+.idea/
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+#liteide
+liteidex/
+
+#macosx
+.DS_Store
