@@ -27,7 +27,7 @@ RUN CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build --ldflags "-s -w" -a -installsuffix cgo -o handler .
 RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test handler/function/... -cover
 
-FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.11
+FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.12
 # Add non root user and certs
 RUN apk --no-cache add ca-certificates \
     && addgroup -S app && adduser -S -g app app \
