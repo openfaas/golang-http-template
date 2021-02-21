@@ -1,4 +1,4 @@
-FROM --platform=${TARGETPLATFORM:-linux/amd64} ghcr.io/openfaas/of-watchdog:0.8.3 as watchdog
+FROM --platform=${TARGETPLATFORM:-linux/amd64} ghcr.io/openfaas/of-watchdog:0.8.4 as watchdog
 FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.15-alpine3.13 as build
 
 ARG TARGETPLATFORM
