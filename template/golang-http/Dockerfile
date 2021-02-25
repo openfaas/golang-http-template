@@ -27,28 +27,17 @@ RUN CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build --ldflags "-s -w" -a -installsuffix cgo -o handler .
 RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test handler/function/... -cover
 
-FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.13
-# Add non root user and certs
-RUN apk --no-cache add ca-certificates \
-    && addgroup -S app && adduser -S -g app app
-# Split instructions so that buildkit can run & cache 
-# the previous command ahead of time.
-RUN mkdir -p /home/app \
-    && chown app /home/app
+FROM --platform=${TARGETPLATFORM:-linux/amd64} gcr.io/distroless/base
 
-WORKDIR /home/app
+COPY --from=build --chown=nonroot:nonroot /go/src/handler/handler    /
+COPY --from=build --chown=nonroot:nonroot /usr/bin/fwatchdog         /
+COPY --from=build --chown=nonroot:nonroot /go/src/handler/function/  /
 
-COPY --from=build /go/src/handler/handler    .
-COPY --from=build /usr/bin/fwatchdog         .
-COPY --from=build /go/src/handler/function/  .
+USER nonroot
 
-RUN chown -R app /home/app
-
-USER app
-
-ENV fprocess="./handler"
+ENV fprocess="/handler"
 ENV mode="http"
 ENV upstream_url="http://127.0.0.1:8082"
 ENV prefix_logs="false"
 
-CMD ["./fwatchdog"]
+CMD ["/fwatchdog"]
