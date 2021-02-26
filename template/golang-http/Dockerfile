@@ -17,6 +17,10 @@ RUN mkdir -p /go/src/handler
 WORKDIR /go/src/handler
 COPY . .
 
+# Add user overrides to the root go.mod, which is the only place "replace" can be used
+RUN cat function/GO_REPLACE.txt >> ./go.mod && \
+    go mod vendor
+
 # Run a gofmt and exclude all vendored code.
 RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*" -not -path "./function/vendor/*"))" || { echo "Run \"gofmt -s -w\" on your Golang code"; exit 1; }
 
