@@ -1,11 +1,7 @@
 language: golang-middleware-distroless
 fprocess: /handler
 welcome_message: |
-  You have created a new function which uses Golang 1.15.
-
-  To include third-party dependencies, use Go modules and use
-  "--build-arg GO111MODULE=on" with faas-cli build or configure this  
-  via your stack.yml file.
+  You have created a new function which uses Golang 1.16.
 
   See more: https://docs.openfaas.com/cli/templates/
   For detailed examples:
