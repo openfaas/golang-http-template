@@ -23,7 +23,6 @@ RUN cat function/GO_REPLACE.txt >> ./go.mod || exit 0
 # Run a gofmt and exclude all vendored code.
 RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*" -not -path "./function/vendor/*"))" || { echo "Run \"gofmt -s -w\" on your Golang code"; exit 1; }
 
-ARG GO111MODULE="off"
 ARG GOPROXY=""
 
 RUN CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
@@ -34,7 +33,6 @@ FROM --platform=${TARGETPLATFORM:-linux/amd64} gcr.io/distroless/base
 
 COPY --from=build --chown=nonroot:nonroot /go/src/handler/handler    /
 COPY --from=build --chown=nonroot:nonroot /usr/bin/fwatchdog         /
-COPY --from=build --chown=nonroot:nonroot /go/src/handler/function/  /
 
 USER nonroot
 
