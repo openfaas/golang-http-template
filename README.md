@@ -5,6 +5,13 @@ This repository contains two Golang templates for OpenFaaS which give additional
 
 ## Diff from upstream - https://github.com/openfaas/golang-http-template
 
+- This template uses distroless:nonroot instead of alpine linux for the function image.
+- golang-http-distroless allows to override go.mod via GO_REPLACE.txt
+- both golang templates run go mod vendor during build to allow external dependencies
+
+While one can use a go.mod file in the function folder to add dependencies, one would have to remove `require github.com/openfaas/templates-sdk v0.0.0-xxxxxxx` and the corresponding folder in function/vendor 
+
+----------------------------------------------
 
 Using the templates:
 
