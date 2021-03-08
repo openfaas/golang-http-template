@@ -8,41 +8,54 @@ ARG TARGETARCH
 
 RUN apk --no-cache add git
 
-ENV CGO_ENABLED=0
-
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 RUN chmod +x /usr/bin/fwatchdog
+
+ENV CGO_ENABLED=0
 
 RUN mkdir -p /go/src/handler
 WORKDIR /go/src/handler
 COPY . .
 
+ARG GO111MODULE="off"
+ARG GOPROXY=""
+ARG GOFLAGS=""
+
+# Add user overrides to the root go.mod, which is the only place "replace" can be used
+RUN cat function/GO_REPLACE.txt >> ./go.mod || exit 0
+RUN if [ -d ./function/vendor ]; then \
+    echo "moving handler vendor" && \
+    mv -f ./function/vendor . && go mod tidy; \
+    else \
+    echo "using modules or vendor not found "; \
+    fi
+
 # Run a gofmt and exclude all vendored code.
 RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*" -not -path "./function/vendor/*"))" || { echo "Run \"gofmt -s -w\" on your Golang code"; exit 1; }
 
-ARG GO111MODULE="off"
-ARG GOPROXY=""
 
+WORKDIR /go/src/handler/function
+
+RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test ./... -cover
+
+WORKDIR /go/src/handler
 RUN CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build --ldflags "-s -w" -a -installsuffix cgo -o handler .
-RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test handler/function/... -cover
 
 FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.13
 # Add non root user and certs
 RUN apk --no-cache add ca-certificates \
     && addgroup -S app && adduser -S -g app app
-# Split instructions so that buildkit can run & cache 
+# Split instructions so that buildkit can run & cache
 # the previous command ahead of time.
 RUN mkdir -p /home/app \
     && chown app /home/app
 
 WORKDIR /home/app
 
-COPY --from=build /go/src/handler/handler    .
-COPY --from=build /usr/bin/fwatchdog         .
-COPY --from=build /go/src/handler/function/  .
-
-RUN chown -R app /home/app
+COPY --from=build --chown=app /go/src/handler/handler    .
+COPY --from=build --chown=app /usr/bin/fwatchdog         .
+COPY --from=build --chown=app /go/src/handler/function/  .
 
 USER app
 
