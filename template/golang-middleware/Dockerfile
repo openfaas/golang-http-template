@@ -23,7 +23,7 @@ ARG GOFLAGS=""
 
 # Add user overrides to the root go.mod, which is the only place "replace" can be used
 RUN cat function/GO_REPLACE.txt >> ./go.mod || exit 0
-RUN if [ -d ./function/vendor ] && [ "${GO111MODULE}" == "off" ]; then \
+RUN if [ -d ./function/vendor ]; then \
     echo "moving handler vendor" && \
     mv -f ./function/vendor .; \
     else \
