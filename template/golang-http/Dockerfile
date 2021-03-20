@@ -25,7 +25,7 @@ ARG GOFLAGS=""
 RUN cat function/GO_REPLACE.txt >> ./go.mod || exit 0
 RUN if [ -d ./function/vendor ]; then \
     echo "moving handler vendor" && \
-    mv -f ./function/vendor . && go mod tidy; \
+    mv -f ./function/vendor .; \
     else \
     echo "using modules or vendor not found "; \
     fi
