@@ -25,9 +25,43 @@ ARG GOFLAGS=""
 RUN cat function/GO_REPLACE.txt >> ./go.mod || exit 0
 RUN if [ -d ./function/vendor ]; then \
     echo "moving handler vendor" && \
-    mv -f ./function/vendor .; \
+    mv -f ./function/vendor .;\
     else \
-    echo "using modules or vendor not found "; \
+    echo "vendor not found "; \
+    fi
+
+RUN if [ "${GO111MODULE}" == 'on' ]; then \
+        # copy the user's go.mod
+        mv -f ./function/go.mod . && \
+        mv -f ./function/go.sum . && \
+        # clean up the go.mod,
+        # remove any local require for the handler/function, this can exist _if_ the
+        # developer has subpackages in their handler. It is ok to just remove it
+        # because we will replace it later
+        grep -v "handler/function" go.mod > gomod2; mv gomod2 go.mod && \
+        # now update the go.mod
+        # first, replace handler/function to point at the local code
+        # second, we need to rename the module to handler to match our main
+        go mod edit \
+            -replace=handler/function=./function \
+            -module handler && \
+        cat go.mod && \
+        if [ -d ./vendor ]; then \
+            # when vendored, we need to do similar edits to the vendor/modules.txt
+            # first we need to replace any possible copy of the handler code
+            rm -rf vendor/handler && \
+            # in modules.txt, we remove existing references to the handler/function
+            # these are replaced later with the new structure
+            grep -v "handler/function" ./vendor/modules.txt> modulestext; mv modulestext ./vendor/modules.txt && \
+            # add the mising replace to the vendor/modules.txt
+            echo "## explicit" >> ./vendor/modules.txt && \
+            echo "# handler/function => ./function" >> ./vendor/modules.txt && \
+            cat ./vendor/modules.txt; \
+        else \
+            echo "skip adding replace to ' ./vendor/modules.txt'"; \
+        fi \
+    else \
+        echo "skip go.mod handling"; \
     fi
 
 # Run a gofmt and exclude all vendored code.
