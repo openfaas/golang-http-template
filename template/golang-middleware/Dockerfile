@@ -20,15 +20,10 @@ COPY . .
 ARG GO111MODULE="off"
 ARG GOPROXY=""
 ARG GOFLAGS=""
+ARG DEBUG=0
 
-# Add user overrides to the root go.mod, which is the only place "replace" can be used
-RUN cat function/GO_REPLACE.txt >> ./go.mod || exit 0
-RUN if [ -d ./function/vendor ]; then \
-    echo "moving handler vendor" && \
-    mv -f ./function/vendor .; \
-    else \
-    echo "using modules or vendor not found "; \
-    fi
+# Lift the vendor and go.mod to the main package, cleanup any relative references
+RUN sh modules-cleanup.sh
 
 # Run a gofmt and exclude all vendored code.
 RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*" -not -path "./function/vendor/*"))" || { echo "Run \"gofmt -s -w\" on your Golang code"; exit 1; }
