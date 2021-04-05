@@ -28,6 +28,11 @@ cleanup_gomod() {
         return;
     fi
 
+    if [ ! -f ./function/go.mod ]; then
+        echo "module not initialized, skipping go.mod cleanup"
+        return;
+    fi
+
     echo "cleaning up go.mod"
 
     # Copy the user's go.mod
@@ -95,6 +100,11 @@ cleanup_vendor_modulestxt() {
     # see https://stackoverflow.com/a/18264223
     if [ "z$GO111MODULE" = "zoff" ]; then
         echo "modules disabled, skipping modules.txt cleanup"
+        return;
+    fi
+
+    if [ -f ./function/go.mod ]; then
+        echo "module not initialized, skipping go.mod cleanup"
         return;
     fi
 
