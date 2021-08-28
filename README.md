@@ -394,7 +394,7 @@ This replacement is handled gracefully by the template at build time and your lo
 
 ##### Go sub-modules
 
-For this example you will need to be using Go 1.13 or newer and Go modules, enable this via `faas-cli build --build-arg GO111MODULE=on`.
+For this example you will need to be using Go 1.16 or newer and Go modules, enable this via `faas-cli build --build-arg GO111MODULE=on`.
 
 Imagine you have a package which you want to store outside of the `handler.go` file, it's another middleware which can perform an echo of the user's input.
 
