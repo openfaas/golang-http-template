@@ -1,7 +1,7 @@
 language: golang-http
 fprocess: ./handler
 welcome_message: |
-  You have created a new function which uses Go 1.15.
+  You have created a new function which uses Go 1.17
 
   To include third-party dependencies, use Go modules and use
   "--build-arg GO111MODULE=on" with faas-cli build or configure this  

@@ -1,6 +1,6 @@
 module handler
 
-go 1.15
+go 1.17
 
 replace handler/function => ./function
 
