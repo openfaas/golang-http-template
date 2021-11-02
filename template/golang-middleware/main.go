@@ -35,10 +35,10 @@ func main() {
 
 	http.HandleFunc("/", function.Handle)
 
-	listenUntilShutdown(s, healthInterval)
+	listenUntilShutdown(s, healthInterval, writeTimeout)
 }
 
-func listenUntilShutdown(s *http.Server, shutdownTimeout time.Duration) {
+func listenUntilShutdown(s *http.Server, shutdownTimeout time.Duration, writeTimeout time.Duration) {
 	idleConnsClosed := make(chan struct{})
 	go func() {
 		sig := make(chan os.Signal, 1)
@@ -49,11 +49,14 @@ func listenUntilShutdown(s *http.Server, shutdownTimeout time.Duration) {
 		log.Printf("[entrypoint] SIGTERM: no connections in: %s", shutdownTimeout.String())
 		<-time.Tick(shutdownTimeout)
 
-		if err := s.Shutdown(context.Background()); err != nil {
+		ctx, cancel := context.WithTimeout(context.Background(), writeTimeout)
+		defer cancel()
+
+		if err := s.Shutdown(ctx); err != nil {
 			log.Printf("[entrypoint] Error in Shutdown: %v", err)
 		}
 
-		log.Printf("[entrypoint] Exiting")
+		log.Printf("[entrypoint] Exiting.")
 
 		close(idleConnsClosed)
 	}()

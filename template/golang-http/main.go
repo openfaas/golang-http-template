@@ -27,6 +27,7 @@ const defaultTimeout = 10 * time.Second
 func main() {
 	readTimeout := parseIntOrDurationValue(os.Getenv("read_timeout"), defaultTimeout)
 	writeTimeout := parseIntOrDurationValue(os.Getenv("write_timeout"), defaultTimeout)
+	healthInterval := parseIntOrDurationValue(os.Getenv("healthcheck_interval"), writeTimeout)
 
 	s := &http.Server{
 		Addr:           fmt.Sprintf(":%d", 8082),
@@ -36,10 +37,10 @@ func main() {
 	}
 
 	http.HandleFunc("/", makeRequestHandler())
-	listenUntilShutdown(s, writeTimeout)
+	listenUntilShutdown(s, healthInterval, writeTimeout)
 }
 
-func listenUntilShutdown(s *http.Server, shutdownTimeout time.Duration) {
+func listenUntilShutdown(s *http.Server, shutdownTimeout time.Duration, writeTimeout time.Duration) {
 	idleConnsClosed := make(chan struct{})
 	go func() {
 		sig := make(chan os.Signal, 1)
@@ -47,17 +48,17 @@ func listenUntilShutdown(s *http.Server, shutdownTimeout time.Duration) {
 
 		<-sig
 
-		log.Printf("[entrypoint] SIGTERM received.. shutting down server in %s\n", shutdownTimeout.String())
-
+		log.Printf("[entrypoint] SIGTERM: no connections in: %s", shutdownTimeout.String())
 		<-time.Tick(shutdownTimeout)
 
-		if err := s.Shutdown(context.Background()); err != nil {
+		ctx, cancel := context.WithTimeout(context.Background(), writeTimeout)
+		defer cancel()
+
+		if err := s.Shutdown(ctx); err != nil {
 			log.Printf("[entrypoint] Error in Shutdown: %v", err)
 		}
 
-		log.Printf("[entrypoint] No new connections allowed. Exiting in: %s\n", shutdownTimeout.String())
-
-		<-time.Tick(shutdownTimeout)
+		log.Printf("[entrypoint] Exiting.")
 
 		close(idleConnsClosed)
 	}()
