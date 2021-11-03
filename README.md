@@ -27,8 +27,8 @@ The two templates are equivalent with `golang-http` using a structured request/r
 
 You can manage dependencies in one of the following ways:
 
-* To use Go modules without vendoring, add `--build-arg GO111MODULE=on` to `faas-cli up`, you can also use `--build-arg GOPROXY=https://` if you want to use your own mirror for the modules
-* You can also Go modules with vendoring, run `go mod vendor` in your function folder and add `--build-arg GO111MODULE=on` to `faas-cli up`
+* To use Go modules without vendoring, the default already is set `GO111MODULE=on` but you also can make that explicity by adding `--build-arg GO111MODULE=on` to `faas-cli up`, you can also use `--build-arg GOPROXY=https://` if you want to use your own mirror for the modules
+* You can also Go modules with vendoring, run `go mod vendor` in your function folder and add `--build-arg GO111MODULE=off` to `faas-cli up`
 * For traditional vendoring with `dep` give no argument, or add `--build-arg GO111MODULE=off` to `faas-cli up`
 
 ## 1.0 golang-http
@@ -394,8 +394,6 @@ This replacement is handled gracefully by the template at build time and your lo
 
 ##### Go sub-modules
 
-For this example you will need to be using Go 1.13 or newer and Go modules, enable this via `faas-cli build --build-arg GO111MODULE=on`.
-
 Imagine you have a package which you want to store outside of the `handler.go` file, it's another middleware which can perform an echo of the user's input.
 
 ```Golang
@@ -439,3 +437,5 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	handlers.Echo(w, r)
 }
 ```
+
+If you have any vendor private dependency, you can disable the Go module via `faas-cli build --build-arg GO111MODULE=off`.
