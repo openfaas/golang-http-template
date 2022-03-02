@@ -213,7 +213,7 @@ package function
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 )
@@ -225,7 +225,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 
 		// read request payload
-		reqBody, err := ioutil.ReadAll(r.Body)
+		reqBody, err := io.ReadAll(r.Body)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -268,7 +268,7 @@ package function
 import (
 	"database/sql"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	_ "github.com/go-sql-driver/mysql"
@@ -298,7 +298,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 
 		// read request payload
-		body, err := ioutil.ReadAll(r.Body)
+		body, err := io.ReadAll(r.Body)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -400,14 +400,14 @@ Imagine you have a package which you want to store outside of the `handler.go` f
 package handlers
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
 func Echo(w http.ResponseWriter, r *http.Request) {
 	if r.Body != nil {
 		defer r.Body.Close()
-		b, _ := ioutil.ReadAll(r.Body)
+		b, _ := io.ReadAll(r.Body)
 		w.Write(b)
 	}
 }
