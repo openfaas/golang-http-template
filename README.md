@@ -27,9 +27,8 @@ The two templates are equivalent with `golang-http` using a structured request/r
 
 You can manage dependencies in one of the following ways:
 
-* To use Go modules without vendoring, the default already is set `GO111MODULE=on` but you also can make that explicity by adding `--build-arg GO111MODULE=on` to `faas-cli up`, you can also use `--build-arg GOPROXY=https://` if you want to use your own mirror for the modules
+* To use Go modules without vendoring, the default already is set `GO111MODULE=on` but you also can make that explicit by adding `--build-arg GO111MODULE=on` to `faas-cli up`, you can also use `--build-arg GOPROXY=https://` if you want to use your own mirror for the modules
 * You can also Go modules with vendoring, run `go mod vendor` in your function folder and add `--build-arg GO111MODULE=off` to `faas-cli up`
-* For traditional vendoring with `dep` give no argument, or add `--build-arg GO111MODULE=off` to `faas-cli up`
 
 ## 1.0 golang-http
 
