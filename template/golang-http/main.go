@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -83,7 +83,7 @@ func makeRequestHandler() func(http.ResponseWriter, *http.Request) {
 		if r.Body != nil {
 			defer r.Body.Close()
 
-			bodyBytes, bodyErr := ioutil.ReadAll(r.Body)
+			bodyBytes, bodyErr := io.ReadAll(r.Body)
 
 			if bodyErr != nil {
 				log.Printf("Error reading body from request.")

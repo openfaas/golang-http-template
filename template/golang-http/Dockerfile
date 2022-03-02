@@ -17,7 +17,7 @@ RUN mkdir -p /go/src/handler
 WORKDIR /go/src/handler
 COPY . .
 
-ARG GO111MODULE="off"
+ARG GO111MODULE="on"
 ARG GOPROXY=""
 ARG GOFLAGS=""
 ARG DEBUG=0
