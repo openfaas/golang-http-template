@@ -1,5 +1,5 @@
 FROM --platform=${TARGETPLATFORM:-linux/amd64} ghcr.io/openfaas/of-watchdog:0.9.3 as watchdog
-FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.17-alpine3.15 as build
+FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.18-alpine3.15 as build
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -11,7 +11,6 @@ RUN apk --no-cache add git
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 RUN chmod +x /usr/bin/fwatchdog
 
-ENV CGO_ENABLED=0
 
 RUN mkdir -p /go/src/handler
 WORKDIR /go/src/handler
@@ -20,10 +19,9 @@ COPY . .
 ARG GO111MODULE="on"
 ARG GOPROXY=""
 ARG GOFLAGS=""
-ARG DEBUG=0
+ARG CGO_ENABLED=0
+ENV CGO_ENABLED=${CGO_ENABLED}
 
-# Lift the vendor and go.mod to the main package, cleanup any relative references
-RUN sh modules-cleanup.sh
 
 # Run a gofmt and exclude all vendored code.
 RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*" -not -path "./function/vendor/*"))" || { echo "Run \"gofmt -s -w\" on your Golang code"; exit 1; }
