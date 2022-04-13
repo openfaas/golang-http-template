@@ -1,2 +1,2 @@
-github.com/openfaas/templates-sdk v0.0.0-20200723092016-0ebf61253625 h1:6JSt10GDCOw0F67bWnqZ6AYg92pbqCcchTu181aT1w0=
-github.com/openfaas/templates-sdk v0.0.0-20200723092016-0ebf61253625/go.mod h1:JWcVHdzlHcR7nLuaDL88Mz68wOqDvOn0CLO6t27OMhk=
+github.com/openfaas/templates-sdk/go-http v0.0.0-20220408082716-5981c545cb03 h1:wMIW4ddCuogcuXcFO77BPSMI33s3QTXqLTOHY6mLqFw=
+github.com/openfaas/templates-sdk/go-http v0.0.0-20220408082716-5981c545cb03/go.mod h1:2vlqdjIdqUjZphguuCAjoMz6QRPm2O8UT0TaAjd39S8=
