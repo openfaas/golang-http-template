@@ -1,5 +1,4 @@
-OpenFaaS Golang HTTP templates
-=============================================
+# OpenFaaS Golang HTTP templates
 
 This repository contains two Golang templates for OpenFaaS which give additional control over the HTTP request and response. They will both handle higher throughput than the classic watchdog due to the process being kept warm.
 
@@ -27,8 +26,9 @@ The two templates are equivalent with `golang-http` using a structured request/r
 
 You can manage dependencies in one of the following ways:
 
-* To use Go modules without vendoring, the default already is set `GO111MODULE=on` but you also can make that explicit by adding `--build-arg GO111MODULE=on` to `faas-cli up`, you can also use `--build-arg GOPROXY=https://` if you want to use your own mirror for the modules
-* You can also Go modules with vendoring, run `go mod vendor` in your function folder and add `--build-arg GO111MODULE=off` to `faas-cli up`
+- To use Go modules without vendoring, the default already is set `GO111MODULE=on` but you also can make that explicit by adding `--build-arg GO111MODULE=on` to `faas-cli up`, you can also use `--build-arg GOPROXY=https://` if you want to use your own mirror for the modules
+- You can also Go modules with vendoring, run `go mod vendor` in your function folder and add `--build-arg GO111MODULE=off --build-arg GOFLAGS='-mod=vendor'` to `faas-cli up`
+- If you have a private module dependency, we recommend using the vendoring technique from above.
 
 ## 1.0 golang-http
 
@@ -181,7 +181,6 @@ func Handle(req handler.Request) (handler.Response, error) {
 ```
 
 This context can also be passed to other methods so that they can respond to the cancellation as well, for example [`db.ExecContext(req.Context())`](https://golang.org/pkg/database/sql/#DB.ExecContext)
-
 
 ## 2.0 golang-middleware
 
@@ -377,64 +376,14 @@ It is often natural to organize your code into sub-packages, for example you may
         └── version.go
 ```
 
-First update your go.mod file to replace `handler/function` with your local folder
-
-```go
-go mod edit -replace=handler/function=./
-```
-
 Now if you want to reference the`version` sub-package, import it as
 
 ```go
 import "handler/function/pkg/version"
 ```
 
-This replacement is handled gracefully by the template at build time and your local development environment will now recognize the sub-package.
+This works like any local Go project.
 
 ##### Go sub-modules
 
-Imagine you have a package which you want to store outside of the `handler.go` file, it's another middleware which can perform an echo of the user's input.
-
-```Golang
-package handlers
-
-import (
-	"io"
-	"net/http"
-)
-
-func Echo(w http.ResponseWriter, r *http.Request) {
-	if r.Body != nil {
-		defer r.Body.Close()
-		b, _ := io.ReadAll(r.Body)
-		w.Write(b)
-	}
-}
-```
-
-To include a relative module such as this new `handlers` package, you should update your `go.mod` file as follows:
-
-```
-go mod edit -replace=github.com/alexellis/vault/purchase/handlers=./handlers
-```
-
-At build time, this relative path will be handled correctly inside the template.
-
-Now if you want to reference the handlers package from within your `handler.go` write the following:
-
-```golang
-package function
-
-import (
-	"net/http"
-
-	"github.com/alexellis/vault/purchase/handlers"
-)
-
-func Handle(w http.ResponseWriter, r *http.Request) {
-
-	handlers.Echo(w, r)
-}
-```
-
-If you have any vendor private dependency, you can disable the Go module via `faas-cli build --build-arg GO111MODULE=off`.
+Sub-modules (meaning sub-folders with a `go.mod`) are not supported.
