@@ -30,6 +30,32 @@ You can manage dependencies in one of the following ways:
 - You can also Go modules with vendoring, run `go mod vendor` in your function folder and add `--build-arg GO111MODULE=off --build-arg GOFLAGS='-mod=vendor'` to `faas-cli up`
 - If you have a private module dependency, we recommend using the vendoring technique from above.
 
+## Adding static files to your image
+
+Any folder named `static` will be copied into the final image published for your function.
+
+To read this back at runtime, you can do the following:
+
+```go
+package function
+
+import (
+    "io/ioutil"
+    "net/http"
+)
+
+func Handle(w http.ResponseWriter, r *http.Request) {
+
+    data, err := ioutil.ReadFile("./static/file.txt")
+
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+    }
+
+    w.Write(data)
+}
+```
+
 ## 1.0 golang-http
 
 This template provides additional context and control over the HTTP response from your function.
