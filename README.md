@@ -32,7 +32,7 @@ You can manage dependencies in one of the following ways:
 
 ## Adding static files to your image
 
-Any folder named `static` will be copied into the final image published for your function.
+If a folder named `static` is found in the root of your function's source code, **it will be copied** into the final image published for your function.
 
 To read this back at runtime, you can do the following:
 
