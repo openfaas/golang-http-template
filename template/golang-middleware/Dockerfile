@@ -26,6 +26,7 @@ ENV CGO_ENABLED=${CGO_ENABLED}
 RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*" -not -path "./function/vendor/*"))" || { echo "Run \"gofmt -s -w\" on your Golang code"; exit 1; }
 
 WORKDIR /go/src/handler/function
+RUN mkdir -p /go/src/handler/function/static
 
 RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test ./... -cover
 
@@ -33,7 +34,8 @@ WORKDIR /go/src/handler
 RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build --ldflags "-s -w" -a -installsuffix cgo -o handler .
 
-FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.14
+FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.15 as ship
+
 # Add non root user and certs
 RUN apk --no-cache add ca-certificates \
     && addgroup -S app && adduser -S -g app app
@@ -44,9 +46,9 @@ RUN mkdir -p /home/app \
 
 WORKDIR /home/app
 
-COPY --from=build --chown=app /go/src/handler/handler    .
-COPY --from=build --chown=app /usr/bin/fwatchdog         .
-COPY --from=build --chown=app /go/src/handler/function/  .
+COPY --from=build --chown=app /go/src/handler/handler           .
+COPY --from=build --chown=app /usr/bin/fwatchdog                .
+COPY --from=build --chown=app /go/src/handler/function/static   static
 
 USER app
 
