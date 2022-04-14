@@ -5,7 +5,8 @@
 - [ ] Read/searched [the docs](https://docs.openfaas.com/)
 - [ ] Searched [past issues](/issues)
 
-<!--- Provide a general summary of the issue in the Title above -->
+## Why do you need this?
+<!--- Explain how this is affecting you, or what you're trying to achieve -->
 
 
 ## Expected Behaviour
@@ -18,7 +19,7 @@
 <!--- If suggesting a change/improvement, explain the difference from current behavior -->
 
 
-## Possible Solution
+## List All Possible Solutions and Workarounds
 <!--- Not obligatory, but suggest a fix/reason for the bug, -->
 <!--- or ideas how to implement the addition or change -->
 
@@ -30,10 +31,6 @@
 2.
 3.
 4.
-
-## Context
-<!--- How has this issue affected you? What are you trying to accomplish? -->
-<!--- Providing context helps us come up with a solution that is most useful in the real world -->
 
 
 ## Your Environment
