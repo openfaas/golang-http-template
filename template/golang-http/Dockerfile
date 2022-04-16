@@ -20,8 +20,15 @@ ARG GO111MODULE="on"
 ARG GOPROXY=""
 ARG GOFLAGS=""
 ARG CGO_ENABLED=0
-ENV CGO_ENABLED=${CGO_ENABLED}
+ARG DEBUG=0
 
+ENV DEBUG=${DEBUG}
+ENV CGO_ENABLED=${CGO_ENABLED}
+ENV GOOS=${TARGETOS}
+ENV GOARCH=${TARGETARCH}
+ENV GO=/go/src/handler/go.sh
+
+RUN chmod +x ${GO}
 
 # Run a gofmt and exclude all vendored code.
 RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*" -not -path "./function/vendor/*"))" || { echo "Run \"gofmt -s -w\" on your Golang code"; exit 1; }
@@ -29,11 +36,10 @@ RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*" -n
 WORKDIR /go/src/handler/function
 RUN mkdir -p /go/src/handler/function/static
 
-RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test ./... -cover
+RUN ${GO} test ./... -cover
 
 WORKDIR /go/src/handler
-RUN CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
-    go build --ldflags "-s -w" -a -installsuffix cgo -o handler .
+RUN ${GO} build --ldflags "-s -w" -a -installsuffix cgo -o handler .
 
 FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.15
 # Add non root user and certs

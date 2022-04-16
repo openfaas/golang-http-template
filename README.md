@@ -26,8 +26,8 @@ The two templates are equivalent with `golang-http` using a structured request/r
 
 You can manage dependencies in one of the following ways:
 
-- To use Go modules without vendoring, the default already is set `GO111MODULE=on` but you also can make that explicit by adding `--build-arg GO111MODULE=on` to `faas-cli up`, you can also use `--build-arg GOPROXY=https://` if you want to use your own mirror for the modules
-- You can also Go modules with vendoring, run `go mod vendor` in your function folder and add `--build-arg GO111MODULE=off --build-arg GOFLAGS='-mod=vendor'` to `faas-cli up`
+- To use Go modules without vendoring, the default already is set `GO111MODULE=on` but you also can make that explicit by adding `--build-arg GO111MODULE=on` to `faas-cli up`, you can also use `--build-arg GOPROXY=https://` if you want to use your own mirror for the modules.
+- You can also Go modules with vendoring, run `go mod vendor`, the build process will automatically detect the vendor folder and configure the Go environment correctly.
 - If you have a private module dependency, we recommend using the vendoring technique from above.
 
 ## Adding static files to your image
