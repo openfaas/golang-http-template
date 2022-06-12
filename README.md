@@ -40,13 +40,13 @@ To read this back at runtime, you can do the following:
 package function
 
 import (
-    "io/ioutil"
     "net/http"
+    "os"
 )
 
 func Handle(w http.ResponseWriter, r *http.Request) {
 
-    data, err := ioutil.ReadFile("./static/file.txt")
+    data, err := os.ReadFile("./static/file.txt")
 
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
