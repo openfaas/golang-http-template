@@ -11,4 +11,4 @@ welcome_message: |
   See more: https://docs.openfaas.com/cli/templates/
 
   For the template's repo and more examples:
-  https://github.com/openfaas-incubator/golang-http-template
+  https://github.com/openfaas/golang-http-template
