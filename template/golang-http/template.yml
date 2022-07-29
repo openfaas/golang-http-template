@@ -1,7 +1,7 @@
 language: golang-http
 fprocess: ./handler
 welcome_message: |
-  You have created a new function which uses Go 1.17 and Alpine
+  You have created a new function which uses Go 1.18 and Alpine
   Linux as its base image.
 
   To disable the go module, for private vendor code, please use
