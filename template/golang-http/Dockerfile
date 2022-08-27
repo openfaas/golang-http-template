@@ -6,11 +6,10 @@ ARG BUILDPLATFORM
 ARG TARGETOS
 ARG TARGETARCH
 
-RUN apk --no-cache add git
+RUN apk --no-cache add git build-base
 
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 RUN chmod +x /usr/bin/fwatchdog
-
 
 RUN mkdir -p /go/src/handler
 WORKDIR /go/src/handler
@@ -20,8 +19,9 @@ ARG GO111MODULE="on"
 ARG GOPROXY=""
 ARG GOFLAGS=""
 ARG CGO_ENABLED=0
-ENV CGO_ENABLED=${CGO_ENABLED}
 
+# Lift the vendor and go.mod to the main package, cleanup any relative references
+RUN sh modules-cleanup.sh
 
 # Run a gofmt and exclude all vendored code.
 RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*" -not -path "./function/vendor/*"))" || { echo "Run \"gofmt -s -w\" on your Golang code"; exit 1; }
@@ -32,7 +32,7 @@ RUN mkdir -p /go/src/handler/function/static
 RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test ./... -cover
 
 WORKDIR /go/src/handler
-RUN CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build --ldflags "-s -w" -a -installsuffix cgo -o handler .
 
 FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.16.2 as ship

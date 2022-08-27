@@ -2,4 +2,8 @@ module handler
 
 go 1.18
 
-require github.com/openfaas/templates-sdk/go-http v0.0.0-20220408082716-5981c545cb03
+replace handler/function => ./function
+
+require (
+	github.com/openfaas/templates-sdk v0.0.0-20200723092016-0ebf61253625
+)
