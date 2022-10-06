@@ -1,0 +1,23 @@
+name: ci-only
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Setup faas-cli
+        run: curl -sSL https://cli.openfaas.com | sh
+      - name: Verify all templates
+        run: bash verify.sh
