@@ -26,13 +26,16 @@ ENV CGO_ENABLED=${CGO_ENABLED}
 # Run a gofmt and exclude all vendored code.
 RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*" -not -path "./function/vendor/*"))" || { echo "Run \"gofmt -s -w\" on your Golang code"; exit 1; }
 
+RUN sh ./modules-cleanup.sh
+
 WORKDIR /go/src/handler/function
+
 RUN mkdir -p /go/src/handler/function/static
 
-RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test ./... -cover
+RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOFLAGS=${GOFLAGS} go test ./... -cover
 
 WORKDIR /go/src/handler
-RUN CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+RUN CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOFLAGS=${GOFLAGS} \
     go build --ldflags "-s -w" -a -installsuffix cgo -o handler .
 
 FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.16.2 as ship
