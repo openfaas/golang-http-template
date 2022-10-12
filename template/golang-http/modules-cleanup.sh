@@ -4,6 +4,8 @@ set -e
 
 GO111MODULE=$(go env GO111MODULE)
 
+[ -z "$DEBUG" ] && DEBUG=0
+
 # move_vendor will copy the function's vendor folder,
 # if it exists.
 move_vendor() {
