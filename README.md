@@ -37,6 +37,12 @@ You can manage dependencies in one of the following ways:
 - You can also Go modules with vendoring, run `go mod vendor` in your function folder and add `--build-arg GO111MODULE=off --build-arg GOFLAGS='-mod=vendor'` to `faas-cli up`
 - If you have a private module dependency, we recommend using the vendoring technique from above.
 
+### SSH authentication for private Git repositories and modules
+
+If you do not wish to, or cannot use vendoring for some reason, then we provide an alternative set of templates for OpenFaaS Pro customers:
+
+* [OpenFaaS Pro templates for Go](https://github.com/openfaas/pro-templates)
+
 ## 1.0 golang-middleware (recommended template)
 
 This is one of the fastest templates available for Go available. Its signature is a [http.HandlerFunc](https://golang.org/pkg/net/http/#HandlerFunc), instead of a traditional request and response that you may expect from a function.
