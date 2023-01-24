@@ -1,5 +1,5 @@
-FROM --platform=${TARGETPLATFORM:-linux/amd64} ghcr.io/openfaas/of-watchdog:0.9.10 as watchdog
-FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.18-alpine3.16 as build
+FROM --platform=${TARGETPLATFORM:-linux/amd64} ghcr.io/openfaas/of-watchdog:0.9.11 as watchdog
+FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.19-alpine as build
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -22,7 +22,6 @@ ARG GOFLAGS=""
 ARG CGO_ENABLED=0
 ENV CGO_ENABLED=${CGO_ENABLED}
 
-
 # Run a gofmt and exclude all vendored code.
 RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*" -not -path "./function/vendor/*"))" || { echo "Run \"gofmt -s -w\" on your Golang code"; exit 1; }
 
@@ -38,10 +37,12 @@ WORKDIR /go/src/handler
 RUN CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOFLAGS=${GOFLAGS} \
     go build --ldflags "-s -w" -a -installsuffix cgo -o handler .
 
-FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.16.2 as ship
+FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.17.1 as ship
 # Add non root user and certs
+
 RUN apk --no-cache add ca-certificates \
     && addgroup -S app && adduser -S -g app app
+
 # Split instructions so that buildkit can run & cache
 # the previous command ahead of time.
 RUN mkdir -p /home/app \
