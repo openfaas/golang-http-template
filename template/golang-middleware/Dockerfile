@@ -32,9 +32,9 @@ RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test ./... -cover
 
 WORKDIR /go/src/handler
 RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
-    go build --ldflags "-s -w" -a -installsuffix cgo -o handler .
+    go build --ldflags "-s -w" -o handler .
 
-FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.17.1 as ship
+FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.17.2 as ship
 
 # Add non root user and certs
 RUN apk --no-cache add ca-certificates \
