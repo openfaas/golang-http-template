@@ -1,7 +1,7 @@
 language: golang-middleware
 fprocess: ./handler
 welcome_message: |
-  You have created a new function which uses Go 1.22 and Alpine
+  You have created a new function which uses go 1.23 and Alpine
   Linux as its base image.
 
   To disable the go module, for private vendor code, please use
