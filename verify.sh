@@ -59,15 +59,11 @@ for dir in ./*/; do
     dirname=${dir%*/}
     template=${dirname##*/}
 
-    # skip arm templates
-    case "$template" in
-    *-arm*) continue ;;
-    esac
-
     pushd ../ 2>/dev/null 1>&2
 
     build_template $template
     verify_and_clean $template
+    rm -rf stack.yaml *-ci
 
     popd 2>/dev/null 1>&2
 done
@@ -75,3 +71,4 @@ done
 # remove the generated files and folders if successful
 cd ../
 rm -rf *-ci stack.yaml
+
