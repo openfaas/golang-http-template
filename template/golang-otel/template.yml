@@ -1,0 +1,11 @@
+language: golang-otel
+fprocess: ./handler
+welcome_message: |
+  You have created a new function which uses go 1.23 with support for OpenTelemetry
+  instrumentation and Alpine Linux as its base image.
+
+  To disable the go module, for private vendor code, please use
+  "--build-arg GO111MODULE=off" with faas-cli build or configure this
+  via your stack.yml file.
+
+  Learn more: https://docs.openfaas.com/languages/go/
