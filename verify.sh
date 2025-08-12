@@ -6,6 +6,7 @@ CLI="faas-cli"
 build_template() {
     template=$1
 
+    rm -rf stack.yaml || :
     echo Building $template
     func_name=$template-ci
     $CLI new $func_name --lang $template 2>/dev/null 1>&2
