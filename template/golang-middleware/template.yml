@@ -1,8 +1,9 @@
 language: golang-middleware
 fprocess: ./handler
 welcome_message: |
-  You have created a new function which uses go 1.23 and Alpine
-  Linux as its base image.
+  You have created a new function which uses Go 1.25 and Alpine
+  Linux as its base image. The go.mod version is set to 1.24.0
+  for compatibility.
 
   To disable the go module, for private vendor code, please use
   "--build-arg GO111MODULE=off" with faas-cli build or configure this
