@@ -1,5 +1,5 @@
-FROM --platform=${TARGETPLATFORM:-linux/amd64} ghcr.io/openfaas/of-watchdog:0.10.11 AS watchdog
-FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.24.0-alpine AS build
+FROM --platform=${TARGETPLATFORM:-linux/amd64} ghcr.io/openfaas/of-watchdog:0.10.12 AS watchdog
+FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.25-alpine AS build
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -36,7 +36,7 @@ WORKDIR /go/src/handler
 RUN CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOFLAGS=${GOFLAGS} \
     go build --ldflags "-s -w" -o handler .
 
-FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.22.0 AS ship
+FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.22.2 AS ship
 # Add non root user and certs
 
 RUN apk --no-cache add ca-certificates \

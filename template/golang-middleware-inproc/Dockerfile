@@ -1,16 +1,11 @@
-FROM --platform=${TARGETPLATFORM:-linux/amd64} ghcr.io/openfaas/of-watchdog:0.10.12 AS watchdog
 FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.25-alpine AS build
 
-# Multi-arch build args
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 ARG TARGETOS
 ARG TARGETARCH
 
 RUN apk --no-cache add git
-
-COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
-RUN chmod +x /usr/bin/fwatchdog
 
 RUN mkdir -p /go/src/handler
 WORKDIR /go/src/handler
@@ -28,13 +23,17 @@ RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*" -n
 WORKDIR /go/src/handler/function
 RUN mkdir -p /go/src/handler/function/static
 
-RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test ./... -cover
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
+    GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test ./... -cover
 
 WORKDIR /go/src/handler
-RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
+    GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build --ldflags "-s -w" -o handler .
 
-FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.22.2 AS ship
+FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.22.1 AS ship
 
 # Add non root user and certs
 RUN apk --no-cache add ca-certificates \
@@ -48,14 +47,13 @@ RUN mkdir -p /home/app \
 WORKDIR /home/app
 
 COPY --from=build --chown=app /go/src/handler/handler           .
-COPY --from=build --chown=app /usr/bin/fwatchdog                .
 COPY --from=build --chown=app /go/src/handler/function/static   static
 
 USER app
 
-ENV fprocess="./handler"
-ENV mode="http"
-ENV upstream_url="http://127.0.0.1:8082"
+ENV fprocess=""
+ENV mode="inproc"
+ENV upstream_url=""
 ENV prefix_logs="false"
 
-CMD ["./fwatchdog"]
+CMD ["./handler"]

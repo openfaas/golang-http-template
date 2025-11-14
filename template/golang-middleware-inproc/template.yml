@@ -1,4 +1,4 @@
-language: golang-middleware
+language: golang-middleware-inproc
 fprocess: ./handler
 welcome_message: |
   You have created a new function which uses Go 1.25 and Alpine
