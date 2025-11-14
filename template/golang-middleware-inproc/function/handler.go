@@ -13,8 +13,8 @@ import (
 func Handle(w http.ResponseWriter, r *http.Request) {
 	var input []byte
 
-	log := slog.New(slog.NewTextHandler(os.Stdout, opts))
-	log = log.With("X-Call-Id", r.Header.Get("X-Call-Id"))
+	log := slog.New(slog.NewTextHandler(os.Stdout, nil)).
+		With("X-Call-Id", r.Header.Get("X-Call-Id"))
 
 	log.Info("received request")
 
