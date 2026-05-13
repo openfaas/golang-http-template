@@ -7,8 +7,8 @@ welcome_message: |
   in the future and be deleted itself. Pin to a specific
   SHA if you do want use this template.
 
-  You have created a new function which uses Go 1.25 and Alpine
-  Linux as its base image. The go.mod version is set to 1.24.0
+  You have created a new function which uses Go 1.26 and Alpine
+  Linux as its base image. The go.mod version is set to 1.25.0
   for compatibility.
 
   To disable the go module, for private vendor code, please use
