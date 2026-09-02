@@ -33,7 +33,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build --ldflags "-s -w" -o handler .
 
-FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.23.4 AS ship
+FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.24.1 AS ship
 
 # Add non root user and certs
 RUN apk --no-cache add ca-certificates \
