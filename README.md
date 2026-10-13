@@ -245,6 +245,18 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
+### OpenTelemetry
+
+The `golang-otel` template as a variant of the `golang-middleware` template with built-in support for [OpenTelemetry](https://opentelemetry.io/) traces. It allow you to collect traces for HTTP requests by default and makes it easy to extend the function with your own spans.
+
+Create a new function with OpenTelemetry support by running:
+
+```sh
+faas new --lang golang-otel <fn-name>
+```
+
+See the [OpenFaaS docs](https://docs.openfaas.com/languages/go/#opentelemetry-instrumentation) for information on how to use the template.
+
 ## 2.0 golang-http
 
 This template provides additional context and control over the HTTP response from your function.
