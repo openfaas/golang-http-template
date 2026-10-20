@@ -40,6 +40,8 @@ FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.24.2 AS ship
 # Add non root user and certs
 
 RUN apk --no-cache add ca-certificates \
+    && rm -f /usr/share/ca-certificates/mozilla/emSign_ECC_Root_CA_-_G3.crt \
+    && update-ca-certificates --fresh \
     && addgroup -S app && adduser -S -g app app
 
 # Split instructions so that buildkit can run & cache
